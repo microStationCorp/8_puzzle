@@ -2,8 +2,8 @@ import numpy as np
 
 INIT_PUZ = np.array(
     [
-        [1, 2, 3],
-        [4, 5, 6],
+        [1, 2, 6],
+        [4, 5, 3],
         [7, 8, 0]
     ]
 )
@@ -64,11 +64,27 @@ def difference_count(input_array):
     return len(input_array[b])
 
 
+def efficient_arrays(list_of_arrays):
+    arrays = []
+    for l in list_of_arrays:
+        if difference_count(l) == 0:
+            return l
+        arrays.append({
+            "difference": difference_count(l),
+            "array": l
+        })
+    arrays = sorted(arrays, key=lambda i: i['difference'])
+    eff_arrays = []
+    for a in arrays:
+        if a['difference'] == arrays[0]['difference']:
+            eff_arrays.append(a)
+    return eff_arrays
+
+
 def main(input_array):
     list = new_test_puzzles(input_array.copy(), valid_direction(blank_pos(input_array)), blank_pos(input_array))
-    for l in list:
-        if difference_count(l)==0:
-            return l
+    arrays = efficient_arrays(list)
+    return arrays
 
 
 print(main(INIT_PUZ.copy()))
