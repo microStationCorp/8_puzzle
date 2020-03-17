@@ -2,8 +2,8 @@ import numpy as np
 
 INIT_PUZ = np.array(
     [
-        [1, 2, 6],
-        [4, 5, 3],
+        [1, 2, 3],
+        [4, 5, 6],
         [7, 8, 0]
     ]
 )
@@ -16,7 +16,8 @@ FINAL_PUZ = np.array(
     ]
 )
 
-class get_subsidurry_puzzle:
+
+class get_subsidiary_puzzle:
 
     def __init__(self, input_array, previous_blank_pos=None):
         self.input_array = input_array
@@ -57,8 +58,6 @@ class get_subsidurry_puzzle:
     def efficient_arrays(self, list_of_arrays):
         arrays = []
         for l in list_of_arrays:
-            if self.difference_count(l) == 0:
-                return l
             arrays.append({
                 "difference": self.difference_count(l),
                 "array": l,
@@ -87,6 +86,3 @@ class get_subsidurry_puzzle:
         list = self.new_test_puzzles()
         arrays = self.efficient_arrays(list)
         return arrays
-
-gsp = get_subsidurry_puzzle(INIT_PUZ.copy())
-print(gsp.main())
