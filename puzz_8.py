@@ -1,20 +1,40 @@
 import numpy as np
+import colorama
 
 INIT_PUZ = np.array(
+    [
+        [0, 1, 3],
+        [4, 2, 5],
+        [7, 8, 6]
+    ]
+)
+ARRAY_SHAPE = INIT_PUZ.shape
+FINAL_PUZ = np.array(
     [
         [1, 2, 3],
         [4, 5, 6],
         [7, 8, 0]
     ]
 )
-ARRAY_SHAPE = INIT_PUZ.shape
-FINAL_PUZ = np.array(
-    [
-        [1, 0, 3],
-        [4, 2, 5],
-        [7, 8, 6]
-    ]
-)
+
+# unicode
+left_down_angle = '\u2514'
+right_down_angle = '\u2518'
+right_up_angle = '\u2510'
+left_up_angle = '\u250C'
+
+middle_junction = '\u253C'
+top_junction = '\u252C'
+bottom_junction = '\u2534'
+right_junction = '\u2524'
+left_junction = '\u251C'
+
+bar = '\u2502'
+dash = '\u2500'
+
+first_line = left_up_angle + dash + dash + dash + top_junction + dash + dash + dash + top_junction + dash + dash + dash + right_up_angle
+middle_line = left_junction + dash + dash + dash + middle_junction + dash + dash + dash + middle_junction + dash + dash + dash + right_junction
+last_line = left_down_angle + dash + dash + dash + bottom_junction + dash + dash + dash + bottom_junction + dash + dash + dash + right_down_angle
 
 
 class get_subsidiary_puzzle:
@@ -126,12 +146,26 @@ def main_puzzle(input_array):
     return puzzle_redirect(list_of_arrays)
 
 
+def print_puzzle(array):
+    print(first_line)
+    for a in range(len(array)):
+        for i in array[a]:
+            print(bar, i, end=' ')
+        print(bar)
+        if a == 2:
+            print(last_line)
+        else:
+            print(middle_line)
+
+
+print('\nINPUT :')
+print_puzzle(INIT_PUZ)
+print('\nOUTPUT :')
+print_puzzle(FINAL_PUZ)
 my_list = main_puzzle(INIT_PUZ.copy())
+print('\nTOTAL STEPS : ', len(my_list[0]))
 
-print('input:\n',INIT_PUZ,'\n')
-print('output:\n',FINAL_PUZ,'\n')
-
-for l in my_list:
-    for i in l:
-        print(i['array'])
-        print()
+print('\nSTEPS :')
+for l in range(len(my_list[0])):
+    print('\nstep',l+1,' :')
+    print_puzzle(my_list[0][l]['array'])
