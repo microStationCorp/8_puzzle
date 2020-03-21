@@ -10,8 +10,8 @@ INIT_PUZ = np.array(
 ARRAY_SHAPE = INIT_PUZ.shape
 FINAL_PUZ = np.array(
     [
-        [1, 2, 3],
-        [4, 5, 0],
+        [1, 0, 3],
+        [4, 2, 5],
         [7, 8, 6]
     ]
 )
@@ -19,10 +19,9 @@ FINAL_PUZ = np.array(
 
 class get_subsidiary_puzzle:
 
-    def __init__(self, input_array, previous_blank_pos=None):
+    def __init__(self, input_array):
         self.input_array = input_array
         self.blank_pos_value = self.blank_pos_func()
-        self.previous_blank_pos = previous_blank_pos
         self.valid_direction_value = self.valid_direction_func()
 
     def swap(self, input1, input2):
@@ -41,8 +40,6 @@ class get_subsidiary_puzzle:
             valid_direction_pos.append([self.blank_pos_value[0], self.blank_pos_value[1] + 1])
         if self.blank_pos_value[1] - 1 >= 0:
             valid_direction_pos.append([self.blank_pos_value[0], self.blank_pos_value[1] - 1])
-        if self.previous_blank_pos != None:
-            valid_direction_pos.pop(valid_direction_pos.index(self.previous_blank_pos))
         return valid_direction_pos
 
     def blank_pos_func(self):
@@ -61,7 +58,6 @@ class get_subsidiary_puzzle:
             arrays.append({
                 "difference": self.difference_count(l),
                 "array": l,
-                "blank_pos": self.blank_pos_value
             })
         arrays = sorted(arrays, key=lambda i: i['difference'])
         eff_arrays = []
@@ -86,3 +82,56 @@ class get_subsidiary_puzzle:
         list = self.new_test_puzzles()
         arrays = self.efficient_arrays(list)
         return arrays
+
+
+def get_efficient_list(list_of_arrays):
+    perfect_list = False
+    diff = list()
+    eff_list = list()
+    for l in list_of_arrays:
+        diff.append(l[len(l) - 1]['difference'])
+    diff.sort()
+    for l in list_of_arrays:
+        if l[len(l) - 1]['difference'] == 0 and diff[0] == 0:
+            eff_list.append(l)
+            perfect_list = True
+            break
+        elif l[len(l) - 1]['difference'] == diff[0]:
+            eff_list.append(l)
+    return eff_list, perfect_list
+
+
+def puzzle_redirect(list_of_arrays):
+    new_list_of_array = list()
+    for l in list_of_arrays:
+        gsp = get_subsidiary_puzzle(l[len(l) - 1]['array'].copy())
+        subsidiary_data = gsp.main()
+        for s in subsidiary_data:
+            temp_list = l.copy()
+            temp_list.append(s)
+            new_list_of_array.append(temp_list)
+    new_list, complete = get_efficient_list(new_list_of_array)
+    if complete:
+        return new_list
+    else:
+        return puzzle_redirect(new_list)
+
+
+def main_puzzle(input_array):
+    list_of_arrays = []
+    list_of_arrays.append([{
+        'difference': None,
+        'array': input_array.copy()
+    }])
+    return puzzle_redirect(list_of_arrays)
+
+
+my_list = main_puzzle(INIT_PUZ.copy())
+
+print('input:\n',INIT_PUZ,'\n')
+print('output:\n',FINAL_PUZ,'\n')
+
+for l in my_list:
+    for i in l:
+        print(i['array'])
+        print()
