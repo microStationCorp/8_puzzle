@@ -1,5 +1,5 @@
 import numpy as np
-from colorama import Fore
+from colorama import Fore, Back, Style
 
 INIT_PUZ = np.array(
     [
@@ -29,12 +29,12 @@ bottom_junction = '\u2534'
 right_junction = '\u2524'
 left_junction = '\u251C'
 
-bar = '\u2502'
+bar =Style.BRIGHT+ Fore.CYAN + '\u2502' + Fore.RESET+Style.RESET_ALL
 dash = '\u2500'
 
-first_line = left_up_angle + dash + dash + dash + top_junction + dash + dash + dash + top_junction + dash + dash + dash + right_up_angle
-middle_line = left_junction + dash + dash + dash + middle_junction + dash + dash + dash + middle_junction + dash + dash + dash + right_junction
-last_line = left_down_angle + dash + dash + dash + bottom_junction + dash + dash + dash + bottom_junction + dash + dash + dash + right_down_angle
+first_line = Style.BRIGHT + Fore.CYAN + left_up_angle + dash + dash + dash + top_junction + dash + dash + dash + top_junction + dash + dash + dash + right_up_angle + Fore.RESET + Style.RESET_ALL
+middle_line = Style.BRIGHT + Fore.CYAN + left_junction + dash + dash + dash + middle_junction + dash + dash + dash + middle_junction + dash + dash + dash + right_junction + Fore.RESET + Style.RESET_ALL
+last_line = Style.BRIGHT + Fore.CYAN + left_down_angle + dash + dash + dash + bottom_junction + dash + dash + dash + bottom_junction + dash + dash + dash + right_down_angle + Fore.RESET + Style.RESET_ALL
 
 
 class get_subsidiary_puzzle:
@@ -147,10 +147,13 @@ def main_puzzle(input_array):
 
 
 def print_puzzle(array):
-    print(Fore.CYAN+first_line)
+    print(first_line)
     for a in range(len(array)):
         for i in array[a]:
-            print(bar, i, end=' ')
+            if i == 0:
+                print(bar, Back.RED + ' ' + Back.RESET, end=' ')
+            else:
+                print(bar, i, end=' ')
         print(bar)
         if a == 2:
             print(last_line)
@@ -158,14 +161,14 @@ def print_puzzle(array):
             print(middle_line)
 
 
-print('\nINPUT :')
+print(Fore.LIGHTYELLOW_EX + '\nINPUT :' + Fore.RESET)
 print_puzzle(INIT_PUZ)
-print('\nOUTPUT :')
+print(Fore.LIGHTYELLOW_EX + '\nOUTPUT :' + Fore.RESET)
 print_puzzle(FINAL_PUZ)
 my_list = main_puzzle(INIT_PUZ.copy())
-print('\nTOTAL STEPS : ', len(my_list[0]))
+print(Fore.LIGHTYELLOW_EX + '\nTOTAL STEPS : ' + Fore.RESET, len(my_list[0]))
 
 print('\nSTEPS :')
 for l in range(len(my_list[0])):
-    print('\nstep',l+1,' :')
+    print('\nstep', l + 1, ' :')
     print_puzzle(my_list[0][l]['array'])
