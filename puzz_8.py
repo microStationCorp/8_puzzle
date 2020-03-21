@@ -1,5 +1,5 @@
 import numpy as np
-import colorama
+from colorama import Fore
 
 INIT_PUZ = np.array(
     [
@@ -147,7 +147,7 @@ def main_puzzle(input_array):
 
 
 def print_puzzle(array):
-    print(first_line)
+    print(Fore.CYAN+first_line)
     for a in range(len(array)):
         for i in array[a]:
             print(bar, i, end=' ')
