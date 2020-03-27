@@ -1,21 +1,8 @@
-import numpy as np
+from copy import deepcopy
 from colorama import Fore, Back, Style
 
-INIT_PUZ = np.array(
-    [
-        [0, 1, 3],
-        [4, 2, 5],
-        [7, 8, 6]
-    ]
-)
-ARRAY_SHAPE = INIT_PUZ.shape
-FINAL_PUZ = np.array(
-    [
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 0]
-    ]
-)
+DIRECTIONS = {"U": [-1, 0], "D": [1, 0], "L": [0, -1], "R": [0, 1]}
+END = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
 
 # unicode
 left_down_angle = '\u2514'
@@ -29,121 +16,12 @@ bottom_junction = '\u2534'
 right_junction = '\u2524'
 left_junction = '\u251C'
 
-bar =Style.BRIGHT+ Fore.CYAN + '\u2502' + Fore.RESET+Style.RESET_ALL
+bar = Style.BRIGHT + Fore.CYAN + '\u2502' + Fore.RESET + Style.RESET_ALL
 dash = '\u2500'
 
 first_line = Style.BRIGHT + Fore.CYAN + left_up_angle + dash + dash + dash + top_junction + dash + dash + dash + top_junction + dash + dash + dash + right_up_angle + Fore.RESET + Style.RESET_ALL
 middle_line = Style.BRIGHT + Fore.CYAN + left_junction + dash + dash + dash + middle_junction + dash + dash + dash + middle_junction + dash + dash + dash + right_junction + Fore.RESET + Style.RESET_ALL
 last_line = Style.BRIGHT + Fore.CYAN + left_down_angle + dash + dash + dash + bottom_junction + dash + dash + dash + bottom_junction + dash + dash + dash + right_down_angle + Fore.RESET + Style.RESET_ALL
-
-
-class get_subsidiary_puzzle:
-
-    def __init__(self, input_array):
-        self.input_array = input_array
-        self.blank_pos_value = self.blank_pos_func()
-        self.valid_direction_value = self.valid_direction_func()
-
-    def swap(self, input1, input2):
-        temp = input1
-        input1 = input2
-        input2 = temp
-        return input1, input2
-
-    def valid_direction_func(self):
-        valid_direction_pos = []
-        if self.blank_pos_value[0] + 1 < ARRAY_SHAPE[0]:
-            valid_direction_pos.append([self.blank_pos_value[0] + 1, self.blank_pos_value[1]])
-        if self.blank_pos_value[0] - 1 >= 0:
-            valid_direction_pos.append([self.blank_pos_value[0] - 1, self.blank_pos_value[1]])
-        if self.blank_pos_value[1] + 1 < ARRAY_SHAPE[1]:
-            valid_direction_pos.append([self.blank_pos_value[0], self.blank_pos_value[1] + 1])
-        if self.blank_pos_value[1] - 1 >= 0:
-            valid_direction_pos.append([self.blank_pos_value[0], self.blank_pos_value[1] - 1])
-        return valid_direction_pos
-
-    def blank_pos_func(self):
-        for i in range(len(self.input_array)):
-            for k in range(len(self.input_array[i])):
-                if self.input_array[i][k] == 0:
-                    return (i, k)
-
-    def difference_count(self, input_array):
-        b = FINAL_PUZ != input_array
-        return len(input_array[b])
-
-    def efficient_arrays(self, list_of_arrays):
-        arrays = []
-        for l in list_of_arrays:
-            arrays.append({
-                "difference": self.difference_count(l),
-                "array": l,
-            })
-        arrays = sorted(arrays, key=lambda i: i['difference'])
-        eff_arrays = []
-        for a in arrays:
-            if a['difference'] == arrays[0]['difference']:
-                eff_arrays.append(a)
-        return eff_arrays
-
-    def new_test_puzzles(self):
-        valid_puzzles = []
-        for vp in self.valid_direction_value:
-            self.input_array[vp[0]][vp[1]], self.input_array[self.blank_pos_value[0]][
-                self.blank_pos_value[1]] = self.swap(
-                self.input_array[vp[0]][vp[1]], self.input_array[self.blank_pos_value[0]][self.blank_pos_value[1]])
-            valid_puzzles.append(self.input_array.copy())
-            self.input_array[vp[0]][vp[1]], self.input_array[self.blank_pos_value[0]][
-                self.blank_pos_value[1]] = self.swap(
-                self.input_array[vp[0]][vp[1]], self.input_array[self.blank_pos_value[0]][self.blank_pos_value[1]])
-        return valid_puzzles
-
-    def main(self):
-        list = self.new_test_puzzles()
-        arrays = self.efficient_arrays(list)
-        return arrays
-
-
-def get_efficient_list(list_of_arrays):
-    perfect_list = False
-    diff = list()
-    eff_list = list()
-    for l in list_of_arrays:
-        diff.append(l[len(l) - 1]['difference'])
-    diff.sort()
-    for l in list_of_arrays:
-        if l[len(l) - 1]['difference'] == 0 and diff[0] == 0:
-            eff_list.append(l)
-            perfect_list = True
-            break
-        elif l[len(l) - 1]['difference'] == diff[0]:
-            eff_list.append(l)
-    return eff_list, perfect_list
-
-
-def puzzle_redirect(list_of_arrays):
-    new_list_of_array = list()
-    for l in list_of_arrays:
-        gsp = get_subsidiary_puzzle(l[len(l) - 1]['array'].copy())
-        subsidiary_data = gsp.main()
-        for s in subsidiary_data:
-            temp_list = l.copy()
-            temp_list.append(s)
-            new_list_of_array.append(temp_list)
-    new_list, complete = get_efficient_list(new_list_of_array)
-    if complete:
-        return new_list
-    else:
-        return puzzle_redirect(new_list)
-
-
-def main_puzzle(input_array):
-    list_of_arrays = []
-    list_of_arrays.append([{
-        'difference': None,
-        'array': input_array.copy()
-    }])
-    return puzzle_redirect(list_of_arrays)
 
 
 def print_puzzle(array):
@@ -161,14 +39,119 @@ def print_puzzle(array):
             print(middle_line)
 
 
-print(Fore.LIGHTYELLOW_EX + '\nINPUT :' + Fore.RESET)
-print_puzzle(INIT_PUZ)
-print(Fore.LIGHTYELLOW_EX + '\nOUTPUT :' + Fore.RESET)
-print_puzzle(FINAL_PUZ)
-my_list = main_puzzle(INIT_PUZ.copy())
-print(Fore.LIGHTYELLOW_EX + '\nTOTAL STEPS : ' + Fore.RESET, len(my_list[0]))
+class Node:
+    def __init__(self, current_node, previous_node, g, h, dir):
+        self.current_node = current_node
+        self.previous_node = previous_node
+        self.g = g
+        self.h = h
+        self.dir = dir
 
-print('\nSTEPS :')
-for l in range(len(my_list[0])):
-    print('\nstep', l + 1, ' :')
-    print_puzzle(my_list[0][l]['array'])
+    def f(self):
+        return self.g + self.h
+
+
+def get_pos(current_state, element):
+    for row in range(len(current_state)):
+        if element in current_state[row]:
+            return (row, current_state[row].index(element))
+
+
+def euclidianCost(current_state):
+    cost = 0
+    for row in range(len(current_state)):
+        for col in range(len(current_state[0])):
+            pos = get_pos(END, current_state[row][col])
+            cost += abs(row - pos[0]) + abs(col - pos[1])
+    return cost
+
+
+def getAdjNode(node):
+    listNode = []
+    emptyPos = get_pos(node.current_node, 0)
+
+    for dir in DIRECTIONS.keys():
+        newPos = (emptyPos[0] + DIRECTIONS[dir][0], emptyPos[1] + DIRECTIONS[dir][1])
+        if 0 <= newPos[0] < len(node.current_node) and 0 <= newPos[1] < len(node.current_node[0]):
+            newState = deepcopy(node.current_node)
+            newState[emptyPos[0]][emptyPos[1]] = node.current_node[newPos[0]][newPos[1]]
+            newState[newPos[0]][newPos[1]] = 0
+            # listNode += [Node(newState, node.current_node, node.g + 1, euclidianCost(newState), dir)]
+            listNode.append(Node(newState, node.current_node, node.g + 1, euclidianCost(newState), dir))
+
+    return listNode
+
+
+def getBestNode(openSet):
+    firstIter = True
+
+    for node in openSet.values():
+        if firstIter or node.f() < bestF:
+            firstIter = False
+            bestNode = node
+            bestF = bestNode.f()
+    return bestNode
+
+
+def buildPath(closedSet):
+    node = closedSet[str(END)]
+    branch = list()
+
+    while node.dir:
+        branch.append({
+            'dir': node.dir,
+            'node': node.current_node
+        })
+        node = closedSet[str(node.previous_node)]
+    branch.append({
+        'dir': '',
+        'node': node.current_node
+    })
+    branch.reverse()
+
+    return branch
+
+
+def main(puzzle):
+    open_set = {str(puzzle): Node(puzzle, puzzle, 0, euclidianCost(puzzle), "")}
+    closed_set = {}
+
+    while True:
+        test_node = getBestNode(open_set)
+        closed_set[str(test_node.current_node)] = test_node
+
+        if test_node.current_node == END:
+            print(len(open_set), len(closed_set))
+            return buildPath(closed_set)
+
+        adj_node = getAdjNode(test_node)
+        for node in adj_node:
+            if str(node.current_node) in closed_set.keys() or str(node.current_node) in open_set.keys() and open_set[
+                str(node.current_node)].f() < node.f():
+                continue
+            open_set[str(node.current_node)] = node
+
+        del open_set[str(test_node.current_node)]
+
+
+if __name__ == '__main__':
+    br = main([[5, 6, 2],
+               [4, 3, 7],
+               [0, 8, 1]])
+
+    for b in br:
+        if b['dir'] != '':
+            letter = ''
+            if b['dir'] == 'U':
+                letter = 'UP'
+            elif b['dir'] == 'R':
+                letter = "RIGHT"
+            elif b['dir'] == 'L':
+                letter = 'LEFT'
+            elif b['dir'] == 'D':
+                letter = 'DOWN'
+            print(dash + dash + right_junction, letter, left_junction + dash + dash)
+        print_puzzle(b['node'])
+        print()
+
+    print('total steps : ',len(br)-1)
