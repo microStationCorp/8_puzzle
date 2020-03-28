@@ -121,7 +121,6 @@ def main(puzzle):
         closed_set[str(test_node.current_node)] = test_node
 
         if test_node.current_node == END:
-            print(len(open_set), len(closed_set))
             return buildPath(closed_set)
 
         adj_node = getAdjNode(test_node)
@@ -135,10 +134,13 @@ def main(puzzle):
 
 
 if __name__ == '__main__':
-    br = main([[5, 6, 2],
-               [4, 3, 7],
-               [0, 8, 1]])
+    br = main([[6, 2, 8],
+               [4, 7, 1],
+               [0, 3, 5]])
 
+    print('total steps : ', len(br) - 1)
+    print()
+    print(dash + dash + right_junction, "INPUT", left_junction + dash + dash)
     for b in br:
         if b['dir'] != '':
             letter = ''
@@ -154,4 +156,4 @@ if __name__ == '__main__':
         print_puzzle(b['node'])
         print()
 
-    print('total steps : ',len(br)-1)
+    print(dash + dash + right_junction, 'ABOVE IS THE OUTPUT', left_junction + dash + dash)
